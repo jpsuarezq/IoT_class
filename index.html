@@ -1,67 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Google Sheets</title>
+    <title>Visualización de datos</title>
     <style>
-        /* Estilos adicionales para la tabla */
         table {
             border-collapse: collapse;
             width: 100%;
         }
+
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border: 1px solid #dddddd;
             text-align: left;
+            padding: 8px;
         }
+
         th {
             background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
-    <h1>Tabla de Datos de Google Sheets</h1>
-    <table id="tablaDatos">
-        <!-- Aquí se agregará la tabla dinámicamente -->
+    <h1>Visualización de datos de Google Sheet</h1>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Temperatura</th>
+                <th>Humedad</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se agregarán las filas de datos -->
+        </tbody>
     </table>
 
     <script>
-        // Función para consultar el servicio web y actualizar la tabla
-        function actualizarTabla() {
-            fetch("https://script.google.com/macros/s/AKfycby3JXO_gHuaDXtmidxTXv9h3C5Ym2IVQUJBkMl20wNM4EZUc7C5R5TAY012_qZ6dTKauQ/exec")
+        function fetchData() {
+            fetch('https://script.google.com/macros/s/AKfycbwIBeE6-qSEw6X1tZ9LWxuO_gU0JAxzGpNpUD7lEAFvWuN6t88/exec')
                 .then(response => response.json())
                 .then(data => {
                     // Limpiar la tabla antes de actualizarla
-                    const tabla = document.getElementById("tablaDatos");
-                    tabla.innerHTML = "";
+                    const tableBody = document.querySelector('#dataTable tbody');
+                    tableBody.innerHTML = '';
 
-                    // Crear la cabecera de la tabla
-                    const cabecera = document.createElement("tr");
-                    data[0].forEach(col => {
-                        const th = document.createElement("th");
-                        th.textContent = col;
-                        cabecera.appendChild(th);
-                    });
-                    tabla.appendChild(cabecera);
-
-                    // Crear las filas de datos
-                    for (let i = 1; i < data.length; i++) {
-                        const fila = document.createElement("tr");
-                        data[i].forEach(value => {
-                            const td = document.createElement("td");
-                            td.textContent = value;
-                            fila.appendChild(td);
+                    // Crear filas de datos
+                    data.forEach(rowData => {
+                        const row = document.createElement('tr');
+                        rowData.forEach(cellData => {
+                            const cell = document.createElement('td');
+                            cell.textContent = cellData;
+                            row.appendChild(cell);
                         });
-                        tabla.appendChild(fila);
-                    }
+                        tableBody.appendChild(row);
+                    });
                 })
-                .catch(error => console.error("Error al obtener datos:", error));
+                .catch(error => console.error('Error al obtener datos:', error));
         }
 
-        // Llamar a la función para actualizar la tabla cada medio segundo
-        setInterval(actualizarTabla, 500);
+        // Llamar a fetchData() cada medio segundo (500 ms)
+        setInterval(fetchData, 500);
     </script>
 </body>
 </html>
-
