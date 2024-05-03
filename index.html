@@ -1,55 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Google Sheets Data</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Google Sheets</title>
 </head>
 <body>
-    <div class="container">
-        <h1 class="mt-5">Datos de Google Sheets</h1>
-        <table id="data-table" class="table table-striped mt-3">
-            <thead>
-                <tr id="header-row">
-                    <!-- Aquí irán los encabezados de la tabla -->
-                </tr>
-            </thead>
-            <tbody id="data-body">
-                <!-- Aquí irán los datos de la tabla -->
-            </tbody>
-        </table>
-    </div>
+    <h1>Tabla de Datos de Google Sheets</h1>
+    <table id="tablaDatos">
+        <!-- Aquí se agregará la tabla dinámicamente -->
+    </table>
+
     <script>
-        function fetchData() {
-            // Aquí debes reemplazar 'your-web-service-url' con la URL de tu servicio web
-            fetch('https://script.google.com/macros/s/AKfycby3JXO_gHuaDXtmidxTXv9h3C5Ym2IVQUJBkMl20wNM4EZUc7C5R5TAY012_qZ6dTKauQ/exec')
-                .then(response => response.json())
-                .then(data => {
-                    var headerRow = document.getElementById('header-row');
-                    var dataBody = document.getElementById('data-body');
-                    // Limpia la tabla antes de agregar nuevos datos
-                    headerRow.innerHTML = '';
-                    dataBody.innerHTML = '';
-                    // Agrega los datos a la tabla
-                    data.forEach((row, i) => {
-                        var tr = document.createElement('tr');
-                        row.forEach(cell => {
-                            var td = document.createElement(i === 0 ? 'th' : 'td');
-                            td.textContent = cell;
-                            tr.appendChild(td);
-                        });
-                        if (i === 0) {
-                            headerRow.appendChild(tr);
-                        } else {
-                            dataBody.appendChild(tr);
+        document.addEventListener("DOMContentLoaded", function() {
+            // Función para consultar el servicio web y actualizar la tabla
+            function actualizarTabla() {
+                fetch("https://script.google.com/macros/s/AKfycby3JXO_gHuaDXtmidxTXv9h3C5Ym2IVQUJBkMl20wNM4EZUc7C5R5TAY012_qZ6dTKauQ/exec")
+                    .then(response => response.json())
+                    .then(data => {
+                        // Limpiar la tabla antes de actualizarla
+                        document.getElementById("tablaDatos").innerHTML = "";
+
+                        // Crear la cabecera de la tabla
+                        let headerRow = document.createElement("tr");
+                        for (let key in data[0]) {
+                            let headerCell = document.createElement("th");
+                            headerCell.textContent = key;
+                            headerRow.appendChild(headerCell);
                         }
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
-        // Llama a la función fetchData cada 2 segundos
-        setInterval(fetchData, 2000);
+                        document.getElementById("tablaDatos").appendChild(headerRow);
+
+                        // Crear las filas de datos
+                        data.forEach(entry => {
+                            let row = document.createElement("tr");
+                            for (let key in entry) {
+                                let cell = document.createElement("td");
+                                cell.textContent = entry[key];
+                                row.appendChild(cell);
+                            }
+                            document.getElementById("tablaDatos").appendChild(row);
+                        });
+                    })
+                    .catch(error => console.error("Error al obtener datos:", error));
+            }
+
+            // Llamar a la función para actualizar la tabla cada medio segundo
+            setInterval(actualizarTabla, 500);
+        });
     </script>
 </body>
 </html>
