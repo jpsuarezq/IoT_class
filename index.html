@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Google Sheets</title>
+    <style>
+        /* Estilos adicionales para la tabla */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <h1>Tabla de Datos de Google Sheets</h1>
@@ -12,41 +27,41 @@
     </table>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Función para consultar el servicio web y actualizar la tabla
-            function actualizarTabla() {
-                fetch("https://script.google.com/macros/s/AKfycby3JXO_gHuaDXtmidxTXv9h3C5Ym2IVQUJBkMl20wNM4EZUc7C5R5TAY012_qZ6dTKauQ/exec")
-                    .then(response => response.json())
-                    .then(data => {
-                        // Limpiar la tabla antes de actualizarla
-                        document.getElementById("tablaDatos").innerHTML = "";
+        // Función para consultar el servicio web y actualizar la tabla
+        function actualizarTabla() {
+            fetch("https://script.google.com/macros/s/AKfycby3JXO_gHuaDXtmidxTXv9h3C5Ym2IVQUJBkMl20wNM4EZUc7C5R5TAY012_qZ6dTKauQ/exec")
+                .then(response => response.json())
+                .then(data => {
+                    // Limpiar la tabla antes de actualizarla
+                    const tabla = document.getElementById("tablaDatos");
+                    tabla.innerHTML = "";
 
-                        // Crear la cabecera de la tabla
-                        let headerRow = document.createElement("tr");
-                        for (let key in data[0]) {
-                            let headerCell = document.createElement("th");
-                            headerCell.textContent = key;
-                            headerRow.appendChild(headerCell);
-                        }
-                        document.getElementById("tablaDatos").appendChild(headerRow);
+                    // Crear la cabecera de la tabla
+                    const cabecera = document.createElement("tr");
+                    data[0].forEach(col => {
+                        const th = document.createElement("th");
+                        th.textContent = col;
+                        cabecera.appendChild(th);
+                    });
+                    tabla.appendChild(cabecera);
 
-                        // Crear las filas de datos
-                        data.forEach(entry => {
-                            let row = document.createElement("tr");
-                            for (let key in entry) {
-                                let cell = document.createElement("td");
-                                cell.textContent = entry[key];
-                                row.appendChild(cell);
-                            }
-                            document.getElementById("tablaDatos").appendChild(row);
+                    // Crear las filas de datos
+                    for (let i = 1; i < data.length; i++) {
+                        const fila = document.createElement("tr");
+                        data[i].forEach(value => {
+                            const td = document.createElement("td");
+                            td.textContent = value;
+                            fila.appendChild(td);
                         });
-                    })
-                    .catch(error => console.error("Error al obtener datos:", error));
-            }
+                        tabla.appendChild(fila);
+                    }
+                })
+                .catch(error => console.error("Error al obtener datos:", error));
+        }
 
-            // Llamar a la función para actualizar la tabla cada medio segundo
-            setInterval(actualizarTabla, 500);
-        });
+        // Llamar a la función para actualizar la tabla cada medio segundo
+        setInterval(actualizarTabla, 500);
     </script>
 </body>
 </html>
+
